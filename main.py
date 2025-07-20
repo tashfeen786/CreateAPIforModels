@@ -63,3 +63,45 @@ class HouseFeatures(BaseModel):
     Longitude: float 
 
 # Define the output model
+class PredictionResponse(BaseModel):
+    # Response model for predictions
+    predicted_price: float
+    input_feature: dict
+
+@app.get("/", response_class = HTMLResponse)
+async def root():
+    """Root endpoint with a user-friebdly HTML page"""
+    return"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>House Presiction API</title>
+        <style>
+            body{
+                font-family: Arial, sans-serif;
+                backgroung: #f9f9f9;
+                margin: 0;
+                padding: 0;
+                }
+"""
+
+@app.post("/predict", response_model = PredictionResponse)
+async def predict_house_prices(features: HouseFeatures):
+    try:
+        # Convert input to numpy array
+        input_data = np.array([[
+            features.MedInc,
+            features.HouseAge,
+            features.AveRooms,
+            features.AveBedrms,
+            features.Population,
+            features.AveOccup,
+            features.Latitude,
+            features.Longitude   
+        ]])
+
+        # scale the input data using the saved scaler 
+        input_scaled = scaler.transform(input_data)
+
+        # Make prediction
+        
